@@ -62,6 +62,16 @@ function renderCircles(circlesGroup, newXScale, chosenXaxis) {
   return circlesGroup;
 }
 
+function renderCirclesLabels(circlesLabels, newXScale, chosenXaxis) {
+
+    circlesLabels.transition()
+      .duration(1000)
+      .attr("x", d => newXScale(d[chosenXAxis]));
+  
+    return circlesLabels;
+  }
+  
+
 // function used for updating circles group with new tooltip
 function updateToolTip(chosenXAxis, circlesGroup) {
 
@@ -129,6 +139,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
   var circlesGroup = chartGroup.selectAll("circle")
     .data(demoData)
     .enter()
+    .append("g").attr("id", "labl")
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
     .attr("cy", d => yLinearScale(d.poverty))
@@ -143,21 +154,26 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     // .style("stroke-width", "1");
     
   /* Create the text for each block */
-  circlesGroup.append("text")
+  var circlesLabels = chartGroup.selectAll("#labl")
+    .append("text")
     .text(function(d) {
       return d.abbr
     })
-    .attr({
-      "text-anchor": "middle",
-    //   "fill": "orange",
-      "font-size": "25"
-    //   "font-size": function(d) {
-    //     return d.r / ((d.r * 10) / 100);
-    //   },
-    //   "dy": function(d) {
-    //     return d.r / ((d.r * 25) / 100);
-    //   }
-    });
+    .attr("dx", function(d){return -15})
+    .attr("dy", function(d){return   5})
+    .attr("x", d => xLinearScale(d[chosenXAxis]))
+    .attr("y", d => yLinearScale(d.poverty));
+    // .attr({
+    //   "text-anchor": "middle",
+    //   "color": "black",
+    //   "font-size": "10"
+    // //   "font-size": function(d) {
+    // //     return d.r / ((d.r * 10) / 100);
+    // //   },
+    // //   "dy": function(d) {
+    // //     return d.r / ((d.r * 25) / 100);
+    // //   }
+    // });
 
   // Create group for  2 x- axis labels
   var labelsGroup = chartGroup.append("g")
@@ -210,6 +226,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
 
         // updates circles with new x values
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        circlesLabels = renderCirclesLabels(circlesLabels, xLinearScale, chosenXAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
