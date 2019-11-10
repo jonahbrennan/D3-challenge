@@ -1,6 +1,6 @@
 // @TODO: YOUR CODE HERE!
 var svgWidth = 800;
-var svgHeight = 500;
+var svgHeight = 700;
 
 var margin = {
   top: 20,
@@ -111,6 +111,9 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     data.age = +data.age;
     data.poverty = +data.poverty;
     data.healthcare = +data.healthcare;
+    data.smokes = +data.smokes;
+    // console.log(data.smokes);
+
   });
 
   // xLinearScale function above csv import
@@ -135,6 +138,14 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
   chartGroup.append("g")
     .call(leftAxis);
 
+var smokey = demoData.forEach(function(data) {
+
+    data.smokes = +data.smokes;
+    // console.log(data.smokes);
+    return data.smokes;
+  });
+//   console.log(demoData);
+
   // append initial circles
   var circlesGroup = chartGroup.selectAll("circle")
     .data(demoData)
@@ -143,24 +154,64 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
     .attr("cy", d => yLinearScale(d.poverty))
-    .attr("r", 12)
+    .attr("r",  d => d.obesity)
     .style("stroke", d => d.error ? "red" : "white")
     .style("stroke-width", "1.5")
-    .attr("fill", "orange")
-    .attr("opacity", ".4");
-    // .append("text", d => demoData.abbr );
+    // .attr("fill", `rgba(255,0,0,${.01*(demoData[0]['smokes'])})`)
+    // .attr("fill", `rgba(255,${(d => .01*d.smokes)},0,1)`)
+    // .attr("fill",  `"rgb(255,${ d => .01*demoData[0]['smokes']},0)"`)
+    .attr("fill", function(d) {
+        if (d.smokes > 20) {
+          return "red";
+        } else if (d.smokes > 15) {
+          return "orange";
+        }
+        return "green";
+      })
 
-    // .style("stroke", "white")
-    // .style("stroke-width", "1");
+    .attr("opacity",  d => (.01*d.smokes)*3);
     
-  /* Create the text for each block */
+    // for (var i = 0; i < demoData.length; i++) {
+        
+    //     chartGroup.selectAll("circle")
+    //     .attr("fill", `rgba(${Math.random()*100+demoData[i]['age']},${(demoData[i]['age'])},${Math.random()*100+demoData[i]['smokes']},1)`);
+    //     // console.log(chartGroup.selectAll("circle"));
+    //     // console.log(demoData[i]['smokes']);
+    //     console.log(circlesGroup.attr("fill"));
+    //     return circlesGroup.attr("fill", `rgba(${Math.random()*100+demoData[i]['age']},${(demoData[i]['age'])},${Math.random()*100+demoData[i]['smokes']},1)`);
+    // }
+
+    // .attr("fill", function(d) {
+    //     for (var i = 0; i < demoData.length; i++) {
+    //         console.log(demoData[i]['smokes']);
+    //         `rgba(255,200,0,${.01*(demoData[i]['smokes'])})`}
+    // })
+    // function listLoop(userList) {
+        // for (var i = 0; i < demoData.length; i++) {
+        //     //   console.log(userList[i]['smokes']);
+        //     chartGroup.selectAll("circle")
+        //     // .data(demoData)
+        //     // .enter()
+        //     .attr("fill", `rgba(255,200,0,${.01*(demoData[i]['smokes'])})`)
+        //     console.log(circlesGroup.attr("fill"));
+        //     }
+        //   }
+        //   listLoop(demoData);
+
+  console.log(circlesGroup.attr("fill"));
+
+  /* Create the text for each circle */
   var circlesLabels = chartGroup.selectAll("#labl")
     .append("text")
     .text(function(d) {
       return d.abbr
     })
-    .attr("dx", function(d){return -15})
-    .attr("dy", function(d){return   5})
+    // .attr("font-size", "13") 
+    .attr("font-size", d => d.obesity*.7)
+    .attr("text-anchor", "middle") 
+    .attr("pointer-events", "none")
+    // .attr("dx", function(d){return -10})
+    // .attr("dy", function(d){return   5})
     .attr("x", d => xLinearScale(d[chosenXAxis]))
     .attr("y", d => yLinearScale(d.poverty));
     // .attr({
@@ -174,7 +225,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     // //     return d.r / ((d.r * 25) / 100);
     // //   }
     // });
-
+// console.log(demoData)
   // Create group for  2 x- axis labels
   var labelsGroup = chartGroup.append("g")
     .attr("transform", `translate(${width / 2}, ${height + 20})`);
