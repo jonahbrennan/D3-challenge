@@ -6,7 +6,7 @@ var margin = {
   top: 20,
   right: 40,
   bottom: 80,
-  left: 50
+  left: 70
 };
 
 var width = svgWidth - margin.left - margin.right;
@@ -32,7 +32,7 @@ var chosenYAxis = "poverty";    // NEWYAX
 function xScale(demoData, chosenXAxis) {
   // create scales
   var xLinearScale = d3.scaleLinear()
-    .domain([d3.min(demoData, d => d[chosenXAxis]) * .9,
+    .domain([d3.min(demoData, d => d[chosenXAxis]) * .81,
       d3.max(demoData, d => d[chosenXAxis]) * 1.1
     ])
     .range([0, width]);
@@ -56,12 +56,12 @@ function renderXAxes(newXScale, xAxis) {
 function yScale(demoData, chosenYAxis) {
     // create scales
     var yLinearScale = d3.scaleLinear()
-      .domain([d3.min(demoData, d => d[chosenYAxis]) * .9,
-        d3.max(demoData, d => d[chosenYAxis]) * 1.1
+      .domain([d3.max(demoData, d => d[chosenYAxis]) * 1.1,
+        d3.min(demoData, d => d[chosenYAxis]) * .9
       ])
       .range([0, height]);
 
-    // console.log(yLinearScale);
+    console.log(chosenYAxis);
     return yLinearScale;
   }
   
@@ -73,7 +73,7 @@ function yScale(demoData, chosenYAxis) {
       .duration(1000)
       .call(leftAxis);
 
-    console.log("YOUYOYOY");
+    console.log("NEWYAX");
     return yAxis;
   }
 
@@ -99,7 +99,7 @@ function renderCirclesLabels(circlesLabels, newXScale, chosenXaxis) {
     return circlesLabels;
   }
   
-// function used for updating circles group with a transition to
+// function used for updating Y circles group with a transition to
 // new circles
   function renderYCircles(circlesGroup, newYScale, chosenYaxis) {
 
@@ -169,9 +169,9 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
   var yLinearScale = yScale(demoData, chosenYAxis);
 
   // Create y scale function
-  var yLinearScale = d3.scaleLinear()
-    .domain([d3.min(demoData, d => d.poverty-1), d3.max(demoData, d => d.poverty)])
-    .range([height, 0]);
+//   var yLinearScale = d3.scaleLinear()
+//     .domain([d3.min(demoData, d => d.poverty-1), d3.max(demoData, d => d.poverty)])
+//     .range([height, 0]);
 
   // Create initial axis functions
   var bottomAxis = d3.axisBottom(xLinearScale);
@@ -196,7 +196,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     .append("g").attr("id", "labl")
     .append("circle")
     .attr("cx", d => xLinearScale(d[chosenXAxis]))
-    .attr("cy", d => yLinearScale(d.poverty))
+    .attr("cy", d => yLinearScale(d[chosenYAxis]))
     .attr("r",  d => d.obesity)
     .style("stroke", d => d.error ? "red" : "white")
     .style("stroke-width", "1.5")
@@ -224,7 +224,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     .attr("text-anchor", "middle") 
     .attr("pointer-events", "none")
     .attr("x", d => xLinearScale(d[chosenXAxis]))
-    .attr("y", d => yLinearScale(d.poverty));
+    .attr("y", d => yLinearScale(d[chosenYAxis]));
 
   // Create group for  2 x- axis labels
   var labelsGroup = chartGroup.append("g")
