@@ -18,7 +18,8 @@ var svg = d3
   .select(".chart")
   .append("svg")
   .attr("width", svgWidth)
-  .attr("height", svgHeight);
+  .attr("height", svgHeight)
+  .attr("class", "grid");
 
 // Append an SVG group
 var chartGroup = svg.append("g")
@@ -31,13 +32,25 @@ var chosenYAxis = "poverty";    // NEWYAX
 // function used for updating x-scale var upon click on axis label
 function xScale(demoData, chosenXAxis) {
   // create scales
-  var xLinearScale = d3.scaleLinear()
-    .domain([d3.min(demoData, d => d[chosenXAxis]) * .81,
+  if (chosenXAxis === "age") {
+    var xLinearScale = d3.scaleLinear()
+    .domain([d3.min(demoData, d => d[chosenXAxis]) * .97,
+      d3.max(demoData, d => d[chosenXAxis]) * 1
+    ])
+    .range([0, width]);
+
+  return xLinearScale;
+  }
+  else {
+    var xLinearScale = d3.scaleLinear()
+    .domain([d3.min(demoData, d => d[chosenXAxis]) * .82,
       d3.max(demoData, d => d[chosenXAxis]) * 1.1
     ])
     .range([0, width]);
 
   return xLinearScale;
+  }
+
 }
 
 // function used for updating xAxis var upon click on axis label
@@ -98,7 +111,14 @@ function renderCirclesLabels(circlesLabels, newXScale, chosenXaxis) {
   
     return circlesLabels;
   }
+  function renderCirclesPics(circlesPicsGroup, newXScale, chosenXaxis) {
+
+    circlesPicsGroup.transition()
+      .duration(1000)
+      .attr("x", d => newXScale(d[chosenXAxis]));
   
+    return circlesPicsGroup;
+  }
 // function used for updating Y circles group with a transition to
 // new circles
   function renderYCircles(circlesGroup, newYScale, chosenYaxis) {
@@ -119,6 +139,14 @@ function renderCirclesLabels(circlesLabels, newXScale, chosenXaxis) {
       return circlesLabels;
     }
 
+  function renderYCirclesPics(circlesPicsGroup, newYScale, chosenYaxis) {
+
+      circlesPicsGroup.transition()
+        .duration(1000)
+        .attr("y", d => newYScale(d[chosenYAxis]));
+    
+      return circlesPicsGroup;
+    }
 
 // function used for updating circles group with new tooltip
 function updateToolTip(chosenXAxis, circlesGroup) {
@@ -132,9 +160,9 @@ function updateToolTip(chosenXAxis, circlesGroup) {
 
   var toolTip = d3.tip()
     .attr("class", "tooltip")
-    .offset([80, -60])
+    .offset([0, -70])
     .html(function(d) {
-      return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
+      return (`${d.state}<br>${label}${d[chosenXAxis]}<br>${"Poverty Rate:"} ${d['poverty']}%<br>${"Average Income: $"}${d['income']}`);
     });
 
   circlesGroup.call(toolTip);
@@ -142,6 +170,7 @@ function updateToolTip(chosenXAxis, circlesGroup) {
   circlesGroup.on("mouseover", function(data) {
     toolTip.show(data);
   })
+
     // onmouseout event
     .on("mouseout", function(data, index) {
       toolTip.hide(data);
@@ -161,7 +190,8 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     data.healthcare = +data.healthcare;
     data.smokes = +data.smokes;
     data.income = +data.income;
-    // console.log(data.smokes);
+    data.party = data.party;
+    // console.log(data.party);
   });
 
   // xLinearScale function above csv import
@@ -208,24 +238,48 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
         }
         return "green";
       })
+    .attr("opacity",  d => (.01*d.smokes)*6);
 
-    .attr("opacity",  d => (.01*d.smokes)*3);
+    console.log(circlesGroup.attr("opacity"));
 
-
-  console.log(circlesGroup.attr("fill"));
+    var circlesPicsGroup = chartGroup.selectAll("image")
+    .data(demoData)
+    .enter()
+    .append("g").attr("id", "labl")
+    .append("image")
+    .attr("pointer-events", "none")
+    .attr("x", d => xLinearScale(d[chosenXAxis]))
+    .attr("y", d => yLinearScale(d[chosenYAxis]))
+    .attr("transform", "translate(-12, -28)")
+    .attr("xlink:href", function(d) {
+      if (d.party === "R") {
+        return "https://i.imgur.com/pYSygdW.png";
+      } else if (d.party === "D") {
+        // return "https://upload.wikimedia.org/wikipedia/commons/0/02/DemocraticLogo.svg";
+        return "https://i.imgur.com/vEYOV4k.png";
+      }
+      return "";
+    })
+    .attr("width", d => d.obesity*1.6)
+    .attr("height", d => d.obesity*1.6);
 
   /* Create the text for each circle */
-  var circlesLabels = chartGroup.selectAll("#labl")
+  var circlesLabels = chartGroup.selectAll("#labl").raise()
     .append("text")
     .text(function(d) {
       return d.abbr
     })
     .attr("font-size", d => d.obesity*.7)
+    .style('fill', 'white')
     .attr("text-anchor", "middle") 
     .attr("pointer-events", "none")
+    .attr("dx", function(d){return -10})
+    .attr("dy", function(d){return   15})
     .attr("x", d => xLinearScale(d[chosenXAxis]))
     .attr("y", d => yLinearScale(d[chosenYAxis]));
 
+
+    
   // Create group for  2 x- axis labels
   var labelsGroup = chartGroup.append("g")
     .attr("transform", `translate(${width / 2}, ${height + 20})`);
@@ -235,7 +289,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     .attr("y", 20)
     .attr("value", "age") // value to grab for event listener
     .classed("active", true)
-    .text("Age of Sample");
+    .text("Average Age");
 
   var healthcareLabel = labelsGroup.append("text")
     .attr("x", 0)
@@ -256,6 +310,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
     .attr("value", "poverty") // value to grab for event listener
     .classed("active", true)
     .text("Poverty Rate");
+
 var incomeLabel = labelsYGroup.append("text")
     .attr("transform", "rotate(-90)")
     .attr("y",22 - margin.left)
@@ -263,9 +318,39 @@ var incomeLabel = labelsYGroup.append("text")
     .attr("dy", "1em")
     .attr("value", "income") // value to grab for event listener
     .classed("inactive", true)
-    .text("Income ($)");
+    .text("Average Income ($)");
   // updateToolTip function above csv import
   var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+
+/////////////////////////////////
+//// gridlines in x axis function
+// function make_x_gridlines() {		
+//   return d3.axisBottom(xLinearScale)
+//       .ticks(5)
+// }
+// // gridlines in y axis function
+// function make_y_gridlines() {		
+//   return d3.axisLeft(yLinearScale)
+//       .ticks(5)
+// }
+
+// // add the X gridlines
+// svg.append("g")			
+//     .attr("class", "grid")
+//     // .attr("transform", "translate(0," + height + ")")
+//     .attr("transform", `translate(0, ${height})`)
+    
+//     .call(make_x_gridlines()
+//         .tickSize(-height)
+//         .tickFormat("")
+//     )
+// // add the Y gridlines
+// svg.append("g")			
+//     .attr("class", "grid")
+//     .call(make_y_gridlines()
+//         .tickSize(-width)
+//         .tickFormat("")
+//     )
 
   // x axis labels event listener
   labelsGroup.selectAll("text")
@@ -277,7 +362,7 @@ var incomeLabel = labelsYGroup.append("text")
         // replaces chosenXAxis with value
         chosenXAxis = value;
 
-        // console.log(chosenXAxis)
+        console.log(value)
 
         // functions here found above csv import
         // updates x scale for new data
@@ -289,6 +374,7 @@ var incomeLabel = labelsYGroup.append("text")
         // updates circles with new x values
         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
         circlesLabels = renderCirclesLabels(circlesLabels, xLinearScale, chosenXAxis);
+        circlesPicsGroup = renderCirclesPics(circlesPicsGroup, xLinearScale, chosenXAxis);
 
         // updates tooltips with new info
         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
@@ -334,6 +420,7 @@ var incomeLabel = labelsYGroup.append("text")
       // updates circles with new x values
       circlesGroup = renderYCircles(circlesGroup, yLinearScale, chosenYAxis);
       circlesLabels = renderYCirclesLabels(circlesLabels, yLinearScale, chosenYAxis);
+      circlesPicsGroup = renderYCirclesPics(circlesPicsGroup, yLinearScale, chosenYAxis);
 
       // updates tooltips with new info
     //   circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
