@@ -228,7 +228,7 @@ var legend = svg.selectAll(".legend")                     // NEW
   var offset =  height - 50;     // NEW
   var horz = 35 * legendRectSize;                       // NEW
   var vert = i * height - offset;                       // NEW
-  return 'translate(' + (horz+ svgWidth*.2) + ',' + vert + ')';        // NEW
+  return 'translate(' + (horz+ svgWidth*.75 - 650) + ',' + vert + ')';        // NEW
 });                                                     // NEW
 // console.log(demoData[3]['Legend'])
 
