@@ -46,7 +46,7 @@ function xScale(demoData, chosenXAxis) {
   if (chosenXAxis === "age") {
     var xLinearScale = d3.scaleLinear()
     .domain([d3.min(demoData, d => d[chosenXAxis]) * .97,
-      d3.max(demoData, d => d[chosenXAxis]) * 1
+      d3.max(demoData, d => d[chosenXAxis]) * 1.02
     ])
     .range([0, width]);
 
@@ -85,9 +85,9 @@ function yScale(demoData, chosenYAxis) {
       ])
       .range([0, height]);
 
-    console.log(chosenYAxis);
     return yLinearScale;
   }
+  // console.log(chosenYAxis);
   
   // function used for updating yAxis var upon click on axis label  //NEWYAX
   function renderYAxes(newYScale, yAxis) {
@@ -222,15 +222,15 @@ var legend = svg.selectAll(".legend")                     // NEW
 .data(demoData.filter(function(d,i){ return i<4 }))                       // NEW
 .enter()                                                // NEW
 .append('g')                                            // NEW
-.attr('class', 'legend')                                // NEW
+.attr('class', 'legend')   
 .attr('transform', function(d, i) {                     // NEW
   var height = legendRectSize + legendSpacing;          // NEW
   var offset =  height - 50;     // NEW
   var horz = 35 * legendRectSize;                       // NEW
   var vert = i * height - offset;                       // NEW
-  return 'translate(' + horz + ',' + vert + ')';        // NEW
+  return 'translate(' + (horz+ svgWidth*.2) + ',' + vert + ')';        // NEW
 });                                                     // NEW
-console.log(demoData[3]['Legend'])
+// console.log(demoData[3]['Legend'])
 
 legend.append("circle")           
 .attr("r", 9)     
