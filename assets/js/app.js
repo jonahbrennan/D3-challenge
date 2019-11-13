@@ -14,7 +14,7 @@ var svgWidth = window.innerWidth;
 var svgHeight = window.innerHeight;
 
 var margin = {
-  top: 20,
+  top: 0,
   right: 40,
   bottom: 80,
   left: 70
@@ -30,7 +30,7 @@ var svg = d3
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight)
-  .attr("class", "grid");
+  // .attr("class", "grid");
 
 // Append an SVG group
 var chartGroup = svg.append("g")
@@ -383,33 +383,33 @@ var incomeLabel = labelsYGroup.append("text")
 
 /////////////////////////////////
 //// gridlines in x axis function
-// function make_x_gridlines() {		
-//   return d3.axisBottom(xLinearScale)
-//       .ticks(5)
-// }
-// // gridlines in y axis function
-// function make_y_gridlines() {		
-//   return d3.axisLeft(yLinearScale)
-//       .ticks(5)
-// }
+function make_x_gridlines() {		
+  return d3.axisBottom(xLinearScale)
+      .ticks(5)       // NEW
+}
+// gridlines in y axis function
+function make_y_gridlines() {		
+  return d3.axisLeft(yLinearScale)
+      .ticks(5)
+}
 
-// // add the X gridlines
-// svg.append("g")			
-//     .attr("class", "grid")
-//     // .attr("transform", "translate(0," + height + ")")
-//     .attr("transform", `translate(0, ${height})`)
-    
-//     .call(make_x_gridlines()
-//         .tickSize(-height)
-//         .tickFormat("")
-//     )
-// // add the Y gridlines
-// svg.append("g")			
-//     .attr("class", "grid")
-//     .call(make_y_gridlines()
-//         .tickSize(-width)
-//         .tickFormat("")
-//     )
+// add the X gridlines
+svg.append("g")			
+    .attr("class", "grid")
+    // .attr("transform", "translate(0," + height + ")")
+    .attr("transform", `translate(${margin.left}, ${height})`)
+    .call(make_x_gridlines()
+        .tickSize(-height)
+        .tickFormat("")
+    )
+// add the Y gridlines
+svg.append("g")			
+    .attr("class", "grid")
+    .attr("transform", `translate(${margin.left}, ${margin.top})`)
+    .call(make_y_gridlines()
+        .tickSize(-width)
+        .tickFormat("")
+    )
 
   // x axis labels event listener
   labelsGroup.selectAll("text")
