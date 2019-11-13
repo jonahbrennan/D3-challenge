@@ -1,6 +1,17 @@
 // @TODO: YOUR CODE HERE!
-var svgWidth = 800;
-var svgHeight = 700;
+function makeResponsive() {
+    // if the SVG area isn't empty when the browser loads, remove it
+  // and replace it with a resized version of the chart
+  var svgArea = d3.select("body").select("svg");
+  if (!svgArea.empty()) {
+    svgArea.remove();
+  }
+
+
+// var svgWidth = 800;
+// var svgHeight = 700;
+var svgWidth = window.innerWidth;
+var svgHeight = window.innerHeight;
 
 var margin = {
   top: 20,
@@ -183,20 +194,68 @@ function updateToolTip(chosenXAxis, circlesGroup) {
 d3.csv("assets/data/data.csv", function(err, demoData) {
   if (err) throw err;
 
-  // parse data
+  // parse numeric data
   demoData.forEach(function(data) {
     data.age = +data.age;
     data.poverty = +data.poverty;
     data.healthcare = +data.healthcare;
     data.smokes = +data.smokes;
     data.income = +data.income;
-    data.party = data.party;
+    // data.party = data.party;
+    // data.Legend = data.Legend;
     // console.log(data.party);
   });
+    // console.log(demoData);
 
+  // for (i = 0; 3; i++){
+
+  // }
   // xLinearScale function above csv import
   var xLinearScale = xScale(demoData, chosenXAxis);
   var yLinearScale = yScale(demoData, chosenYAxis);
+
+  //////////  LEGEND TEST  /////////////
+  /////////////////////////////////////
+var legendRectSize = 18;                                  // NEW
+var legendSpacing = 4;                                    // NEW
+var legend = svg.selectAll(".legend")                     // NEW
+.data(demoData.filter(function(d,i){ return i<4 }))                       // NEW
+.enter()                                                // NEW
+.append('g')                                            // NEW
+.attr('class', 'legend')                                // NEW
+.attr('transform', function(d, i) {                     // NEW
+  var height = legendRectSize + legendSpacing;          // NEW
+  var offset =  height - 50;     // NEW
+  var horz = 35 * legendRectSize;                       // NEW
+  var vert = i * height - offset;                       // NEW
+  return 'translate(' + horz + ',' + vert + ')';        // NEW
+});                                                     // NEW
+console.log(demoData[3]['Legend'])
+
+legend.append("circle")           
+.attr("r", 9)     
+.attr("transform", "translate(-5, 8)")                // NEW
+// .attr('width', legendRectSize)                          // NEW
+// .attr('height', legendRectSize)      
+
+.attr("fill", function(d) {
+  if (d.Legend == 'Smokes > 20%') {
+    return "red";
+  } else if (d.Legend == 'Smokes < 20%') {
+    return "orange";
+  } else if (d.Legend == 'Smokes < 15%') {
+  return "green";}
+{
+  return "rgba(0,0,0,0)";
+}
+})                   // NEW
+// .style('fill', "red")                                   // NEW
+.style('stroke', "black");                                // NEW
+
+legend.append('text')                                     // NEW
+.attr('x', legendRectSize + legendSpacing)              // NEW
+.attr('y', legendRectSize - legendSpacing)              // NEW
+.text(function(d) { return d.Legend; });                       // NEW
 
   // Create y scale function
 //   var yLinearScale = d3.scaleLinear()
@@ -238,7 +297,7 @@ d3.csv("assets/data/data.csv", function(err, demoData) {
         }
         return "green";
       })
-    .attr("opacity",  d => (.01*d.smokes)*6);
+    .attr("opacity",  d => (.01*d.smokes)*4);
 
     console.log(circlesGroup.attr("opacity"));
 
@@ -446,3 +505,9 @@ var incomeLabel = labelsYGroup.append("text")
   });
 
 });
+}
+// When the browser loads, makeResponsive() is called.
+makeResponsive();
+
+// When the browser window is resized, responsify() is called.
+d3.select(window).on("resize", makeResponsive);
