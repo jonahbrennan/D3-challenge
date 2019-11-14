@@ -240,7 +240,7 @@ var toolTip = d3.tip()
   .attr("class", "tooltip")
   .offset([0, -70])
   .html(function(d) {
-    return (`${d.state}<br>${label}${d[chosenXAxis]}<br>${"Poverty Rate:"} ${d['poverty']}%<br>${"Average Income: $"}${d['income']}`);
+    return (`${d.state}<br>${label}${d[chosenXAxis]}<br>${"Poverty Rate:"} ${d['poverty']}%<br>${"Average Income: $"}${d['income']}<br>${"Obesity Rate: "}${d['obesity']}%`);    
   });
 
 circlesGroup.call(toolTip);
