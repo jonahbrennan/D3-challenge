@@ -25,13 +25,10 @@ body {
   padding-bottom: 80px;
 }
 
-.grid line {
-  stroke: #ddd;
-}
 
 image {
   /* outline: 1.5px solid white; */
-  z-index: 2);
+  /* z-index: 2; */
 }
 
 .tooltip {
