@@ -72,7 +72,9 @@
   .stateText {
     display: none;
   }
-
+  .active, .inactive {
+    font-size: 19px;
+  }
   .aText {
     font-size: 14px;
   }

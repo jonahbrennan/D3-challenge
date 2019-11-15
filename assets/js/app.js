@@ -51,6 +51,8 @@ if (chosenXAxis === "age") {
   .range([0, width]);
 
 return xLinearScale;
+
+
 }
 else {
   var xLinearScale = d3.scaleLinear()
@@ -59,9 +61,30 @@ else {
   ])
   .range([0, width]);
 
+/////  Make a new TestGrid  //////////////
+function make_y_gridlines() {		
+  let yLinearScale = d3.scaleLinear()
+  .domain([d3.max(demoData, d => d[chosenYAxis]) * 1.1,
+    d3.min(demoData, d => d[chosenYAxis]) * .9
+  ])
+  .range([0, height]);
+  return d3.axisLeft(yLinearScale)
+      .ticks(5)
+}
+svg.append("g")			
+.attr("class", "grid")
+.attr("transform", `translate(${margin.left}, ${margin.top})`)
+.call(make_y_gridlines()
+    .tickSize(-width)
+    .tickFormat("")
+)
+.style("fill","rgba(13,226,49,.15)")
+console.log('Draw temp horizontal grid lines and transition')
+
+///// END  Make a new TestGrid  //////////////
+
 return xLinearScale;
 }
-
 }
 
 // function used for updating xAxis var upon click on axis label
@@ -100,8 +123,6 @@ svg.append("g")
     return xAxis;
 
 }
-
-
 
 
 // function used for updating y-scale var upon click on axis label //NEWYAX
@@ -161,7 +182,6 @@ function renderYAxes(newYScale, yAxis) {
             .tickSize(-width)
             .tickFormat("")
         )
-
 
   console.log("NEWYAX");
   return yAxis;
@@ -274,12 +294,38 @@ demoData.forEach(function(data) {
 });
   // console.log(demoData);
 
-// for (i = 0; 3; i++){
 
-// }
 // xLinearScale function above csv import
 var xLinearScale = xScale(demoData, chosenXAxis);
 var yLinearScale = yScale(demoData, chosenYAxis);
+
+//////////  LEGEND TEST  /////////////
+/////////////////////////////////////
+function LegendPop(){
+
+  var legendRectSize = 18;                                  // NEW
+  var legendSpacing = 4;                                    // NEW
+  var legend1 = svg.selectAll(".legend")                     // NEW
+  .data(demoData.filter(function(d,i){ return i<4 }))                       // NEW
+  .enter()                                                // NEW
+  .append('g')                                            // NEW
+  .attr('class', 'legend')   
+  .attr('transform', function(d, i) {                     // NEW
+  var height = legendRectSize + legendSpacing;          // NEW
+  var offset =  height - 50;     // NEW
+  var horz = 35 * legendRectSize;                       // NEW
+  var vert = i * height - offset;                       // NEW
+  return 'translate(' + (horz+ svgWidth*.75 - 650) + ',' + vert + ')';  
+  });     
+  legend1.append('text')                                // NEW
+    .attr('x', legendRectSize + legendSpacing)              // NEW
+    .attr('y', legendRectSize - legendSpacing)              // NEW
+    .text(function(d) { return d.Legend; })
+  console.log("LEGENDARY");      
+
+  }
+LegendPop();
+
 
 //////////  LEGEND TEST  /////////////
 /////////////////////////////////////
@@ -296,9 +342,10 @@ var offset =  height - 50;     // NEW
 var horz = 35 * legendRectSize;                       // NEW
 var vert = i * height - offset;                       // NEW
 return 'translate(' + (horz+ svgWidth*.75 - 650) + ',' + vert + ')';        // NEW
-});                                                     // NEW
+});                                               // NEW
 // console.log(demoData[3]['Legend'])
 
+  
 legend.append("circle")           
 .attr("r", 9)     
 .attr("transform", "translate(-5, 8)")                // NEW
@@ -315,11 +362,11 @@ return "green";}
 {
 return "rgba(0,0,0,0)";
 }
-})                   // NEW
+})
 // .style('fill', "red")                                   // NEW
 .style('stroke', "black");                                // NEW
 
-legend.append('text')                                     // NEW
+legend.append('text')                                // NEW
 .attr('x', legendRectSize + legendSpacing)              // NEW
 .attr('y', legendRectSize - legendSpacing)              // NEW
 .text(function(d) { return d.Legend; });                       // NEW
@@ -548,6 +595,7 @@ labelsYGroup.selectAll("text")
       incomeLabel
         .classed("active", false)
         .classed("inactive", true);
+        
     }
     else {
       povertyLabel
@@ -557,6 +605,9 @@ labelsYGroup.selectAll("text")
         .classed("active", true)
         .classed("inactive", false);
     }
+
+
+
   }
 /////////////// GRID UPDATE ///////////////////////////
 // gridlines in y axis function
@@ -577,6 +628,8 @@ labelsYGroup.selectAll("text")
 
 });
 }
+
+
 // When the browser loads, makeResponsive() is called.
 makeResponsive();
 
