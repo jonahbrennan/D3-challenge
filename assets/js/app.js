@@ -324,7 +324,7 @@ function LegendPop(){
   console.log("LEGENDARY");      
 
   }
-LegendPop();
+// LegendPop();
 
 
 //////////  LEGEND TEST  /////////////
