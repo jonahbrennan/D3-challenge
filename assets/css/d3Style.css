@@ -68,7 +68,7 @@
 }
 
 /* Mobile Rules */
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 780px) {
   .stateText {
     display: none;
   }
@@ -78,10 +78,14 @@
   .aText {
     font-size: 14px;
   }
+  text {  
+  font: 26px sans-serif;
 }
 
-@media screen and (max-width: 400px) {
+}
+
+/* @media screen and (max-width: 400px) {
   .aText {
     font-size: 13px;
   }
-}
+} */
