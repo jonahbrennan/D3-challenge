@@ -14,6 +14,7 @@ line.horizonalGrid{
 html {
   position: relative;
   min-height: 100%;
+
 }
 
 body {
@@ -25,6 +26,9 @@ body {
   padding-bottom: 80px;
 }
 
+/* text {  
+  font: 16px sans-serif;
+} */
 
 image {
   /* outline: 1.5px solid white; */

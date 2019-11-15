@@ -68,7 +68,7 @@
 }
 
 /* Mobile Rules */
-@media screen and (max-width: 780px) {
+@media screen and (max-width: 720px) {
   .stateText {
     display: none;
   }
